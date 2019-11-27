@@ -118,4 +118,4 @@ const env = {
   account: app.node.tryGetContext('account') || process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT
 };
 
-const ProxySQLStack = new ProxysqlFargate(app, 'ProxySQL2', { env })
+const ProxySQLStack = new ProxysqlFargate(app, 'ProxySQL', { env })
