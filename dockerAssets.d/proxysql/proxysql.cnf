@@ -14,7 +14,7 @@ mysql_variables=
     default_query_timeout=36000000
     have_compress=true
     poll_timeout=2000
-    interfaces="0.0.0.0:6033"
+    interfaces="0.0.0.0:6033;/tmp/proxysql.sock"
     default_schema="information_schema"
     stacksize=1048576
     server_version="5.5.30"
@@ -32,3 +32,53 @@ mysql_variables=
     sessions_sort=true
     connect_retries_on_failure=10
 }
+
+mysql_galera_hostgroups =
+(
+    {
+        writer_hostgroup=10
+        backup_writer_hostgroup=20
+        reader_hostgroup=30
+        offline_hostgroup=9999
+        max_writers=1
+        writer_is_also_reader=2
+        max_transactions_behind=30
+        active=1
+    }
+)
+
+mysql_servers =
+(
+    { address="proxysqlfargatestack-dbclusterdatabased78b6f28-fqj7q1bxisl9.cluster-cmpnlckegndo.ap-northeast-1.rds.amazonaws.com" , port=3306 , hostgroup=10, max_connections=100 },
+    { address="proxysqlfargatestack-dbclusterdatabased78b6f28-fqj7q1bxisl9.cluster-ro-cmpnlckegndo.ap-northeast-1.rds.amazonaws.com" , port=3306 , hostgroup=30, max_connections=100 },
+)
+
+mysql_query_rules =
+(
+    {
+        rule_id=100
+        active=1
+        match_pattern="^SELECT .* FOR UPDATE"
+        destination_hostgroup=10
+        apply=1
+    },
+    {
+        rule_id=200
+        active=1
+        match_pattern="^SELECT .*"
+        destination_hostgroup=30
+        apply=1
+    },
+    {
+        rule_id=300
+        active=1
+        match_pattern=".*"
+        destination_hostgroup=10
+        apply=1
+    }
+)
+
+mysql_users =
+(
+    { username = "wordpress", password = "passw0rd", default_hostgroup = 10, transaction_persistent = 0, active = 1 },
+)

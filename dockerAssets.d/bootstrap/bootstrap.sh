@@ -1,6 +1,11 @@
 #!/bin/bash
 
-cat << EOF | mysql -uadmin -padmin -h127.0.0.1 -P6032
+DB_WRITER_HOST='proxysqlfargatestack-dbclusterdatabased78b6f28-fqj7q1bxisl9.cluster-cmpnlckegndo.ap-northeast-1.rds.amazonaws.com'
+DB_READER_HOST='proxysqlfargatestack-dbclusterdatabased78b6f28-fqj7q1bxisl9.cluster-ro-cmpnlckegndo.ap-northeast-1.rds.amazonaws.com'
+DB_PASSWORD='admin1234'
+
+# cat << EOF | mysql -uadmin -padmin -h127.0.0.1 -P6032
+cat << EOF > output
 insert into mysql_servers(hostgroup_id,hostname,port,weight,comment) values(1,'${DB_WRITER_HOSTNAME}','${DB_WRITER_PORT}',1,'Write Group');
 insert into mysql_servers(hostgroup_id,hostname,port,weight,comment) values(2,'${DB_READER_HOSTNAME}','${DB_READER_PORT}',1,'Read Group');
 insert into mysql_users(username,password,default_hostgroup) VALUES ('admin','${DB_PASSWORD}',1);
