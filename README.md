@@ -31,8 +31,10 @@ We will deploy this refarch with AWS CDK. Read the [Getting Started](https://doc
 When your AWS CDK environment is ready, run the following command to deploy this sample:
 
 ```bash
+# install required modules
+npm install
 # deploy with AWS CDK
-npx cdk synth
+npx cdk diff
 npx cdk deploy
 ```
 
