@@ -216,7 +216,7 @@ export class ProxysqlFargate extends cdk.Construct {
     proxysql.addPortMappings({ containerPort: PROXYSQL_ADMIN_PORT })
 
     const svc = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NLBService', {
-      assignPublicIp: true,
+      assignPublicIp: false,
       cluster,
       taskDefinition,
       publicLoadBalancer: false,
