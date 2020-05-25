@@ -75,6 +75,9 @@ export class DB extends cdk.Construct {
     printOutput(this, 'clusterReadEndpointHostname', this.clusterReadEndpointHostname)
     printOutput(this, 'clusterIdentifier', this.clusterIdentifier)
 
+    if(dbcluster.secret) {
+      printOutput(this, 'DBSecretArn', dbcluster.secret.secretArn)
+    }
   }
 }
 
@@ -217,7 +220,7 @@ export class ProxysqlFargate extends cdk.Construct {
 
     }
 
-    printOutput(this, 'NLBDnsName', svc.loadBalancer.loadBalancerDnsName)
+    // printOutput(this, 'NLBDnsName', svc.loadBalancer.loadBalancerDnsName)
     printOutput(this, 'NLBAliasDN', ar.domainName)
     printOutput(this, 'ECSClusterName', svc.cluster.clusterName)
     printOutput(this, 'ECSServiceName', svc.service.serviceName)

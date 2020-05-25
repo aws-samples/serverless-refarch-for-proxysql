@@ -45,6 +45,21 @@ npx cdk deploy -c use_vpc_id=vpc-123456
 npx cdk deply -c use_default_vpc-1
 ```
 
+### Output Table
+
+| Output Name | Description |
+| ----------- | ----------- |
+| DBCluster/clusterEndpointHostname | Aurora Endpoint Hostname |
+| DBCluster/clusterReadEndpointHostname | Aurora Read Endpoint Hostname |
+| DBCluster/clusterIdentifier | Aurora Cluster Identifier |
+| DBCluster/DBSecretArn | Secret Manager ARN for Aurora master password |
+| ProxySQL/NLBService/LoadBalancerDNS | NLB original DNS name |
+| ProxySQL/NLBAliasDN | NLB DNS name alias for privaed hosted zone |
+| ProxySQL/ECSClusterName | ECS cluster name |
+| ProxySQL/ECSServiceName | ECS service name |
+
+
+
 The deployment will create
 
 1. Amazon Aurora for MySQL database cluster with 1 `writer` and 1 `reader`
