@@ -9,7 +9,6 @@ import { Duration } from '@aws-cdk/core';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as alias from '@aws-cdk/aws-route53-targets';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { PropagatedTagSource } from '@aws-cdk/aws-ecs';
 
 const PROXYSQL_ADMIN_PORT = 6032
 const PROXYSQL_TRAFFIC_PORT = 6033
@@ -220,7 +219,6 @@ export class ProxysqlFargate extends cdk.Construct {
       cluster,
       taskDefinition,
       publicLoadBalancer: false,
-      // NLB listen on 3306
       listenerPort: NLB_LISTENER_PORT,
     })
 
@@ -278,7 +276,6 @@ export class ProxysqlFargate extends cdk.Construct {
       })      
     }
 
-    // printOutput(this, 'NLBDnsName', svc.loadBalancer.loadBalancerDnsName)
     printOutput(this, 'NLBAliasDN', ar.domainName)
     printOutput(this, 'ECSClusterName', svc.cluster.clusterName)
     printOutput(this, 'ECSServiceName', svc.service.serviceName)
