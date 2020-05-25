@@ -16,7 +16,7 @@ const PROXYSQL_TRAFFIC_PORT = 6033
 const AURORA_LISTENER_PORT = 3306
 const NLB_LISTENER_PORT  = 3306
 const PROXYSQL_PRIVATE_ZONE_NAME = 'proxysql.local'
-const AURORA_MASTER_USERNAME = 'admin'
+const DB_MASTER_USERNAME = 'admin'
 
 export interface DBStackProps {
   readonly vpc: ec2.IVpc;
@@ -24,7 +24,21 @@ export interface DBStackProps {
 }
 
 export interface ProxysqlFargateProps extends cdk.StackProps {
-  readonly dbcluster?: DB;
+  /**
+   * Amazon RDS cluster created with AWS CDK
+   * 
+   * @default - no Amazon RDS cluster specified
+   */
+  readonly rdscluster?: DB;
+  /**
+   * Custom backend for any existing MySQL cluster. Define both the writer and reader.
+   * 
+   * @default - no custom backend
+   */
+  readonly customBackend?: CustomBackend;
+  /**
+   * VPC for the ProxySQL service with AWS Fargate
+   */
   readonly vpc?: ec2.IVpc;
 }
 
@@ -35,6 +49,35 @@ export class Infra extends cdk.Construct {
     const stack = cdk.Stack.of(this)
     this.vpc = getOrCreateVpc(stack)
   }
+}
+
+export interface CustomBackend {
+  /**
+   * custom writer host
+   */
+  readonly writerHost: string;
+  /**
+   * custom reader host
+   */
+  readonly readerHost: string;
+  /**
+   * custom writer port
+   * 
+   * @default 3306
+   */
+  readonly writerPort?: string;
+  /**
+   * custom reader port
+   * 
+   * @default 3306
+   */
+  readonly readerPort?: string;
+  /**
+   * custom master user name
+   * 
+   * @default admin
+   */
+  readonly masterUsername?: string;
 }
 
 export class DB extends cdk.Construct {
@@ -50,7 +93,7 @@ export class DB extends cdk.Construct {
     const dbcluster = new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       masterUser: {
-        username: AURORA_MASTER_USERNAME ?? 'admin',
+        username: DB_MASTER_USERNAME ?? 'admin',
       },
       instanceProps: {
         instanceType: props.instanceType ?? new ec2.InstanceType('t3.small'),
@@ -117,7 +160,11 @@ export class ProxysqlFargate extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ProxysqlFargateProps) {
     super(scope, id);
 
-    const vpc = props.vpc ?? props.dbcluster?.vpc ?? getOrCreateVpc(this)
+    if ((props.rdscluster && props.customBackend) || (!props.rdscluster && !props.customBackend)) {
+      throw new Error('You have to specify either dbcluster or customBackend. Atleast one, not both.')
+    }
+
+    const vpc = props.vpc ?? props.rdscluster?.vpc ?? getOrCreateVpc(this)
 
     // generate and store MYSQL_USER1_PASSWORD in the secrets manager
     const auroraMasterSecret = new secretsmanager.Secret(this, 'AuroraMasterSecret', {
@@ -152,15 +199,14 @@ export class ProxysqlFargate extends cdk.Construct {
         streamPrefix: 'proxysql-main'
       }),
       environment: {
-        DB_WRITER_HOSTNAME: props.dbcluster ? `writer.${PROXYSQL_PRIVATE_ZONE_NAME}` : process.env.DB_WRITER_HOSTNAME ?? 'undefined',
-        DB_READER_HOSTNAME: props.dbcluster ? `reader.${PROXYSQL_PRIVATE_ZONE_NAME}` : process.env.DB_READER_HOSTNAME ?? 'undefined',
-        DB_WRITER_PORT: process.env.DB_WRITER_PORT ? process.env.DB_WRITER_PORT.toString() : AURORA_LISTENER_PORT.toString(),
-        DB_READER_PORT: process.env.DB_READER_PORT ? process.env.DB_READER_PORT.toString() : AURORA_LISTENER_PORT.toString(),
-        MYSQL_USER1_NAME: 'mysqluser1',
-        AURORA_MASTER_USERNAME,
+        DB_WRITER_HOSTNAME: `writer.${PROXYSQL_PRIVATE_ZONE_NAME}`,
+        DB_READER_HOSTNAME: `reader.${PROXYSQL_PRIVATE_ZONE_NAME}`,
+        DB_WRITER_PORT: props.rdscluster ? AURORA_LISTENER_PORT.toString() : props.customBackend!.writerPort ? props.customBackend!.writerPort : '3306',
+        DB_READER_PORT: props.rdscluster ? AURORA_LISTENER_PORT.toString() : props.customBackend!.readerPort ? props.customBackend!.readerPort : '3306',
+        DB_MASTER_USERNAME: props.rdscluster ? DB_MASTER_USERNAME : props.customBackend!.masterUsername ?? 'undefined' 
       },
       secrets: {
-        'AURORA_MASTER_PASSWORD': ecs.Secret.fromSecretsManager(auroraMasterSecret),
+        'DB_MASTER_PASSWORD': ecs.Secret.fromSecretsManager(auroraMasterSecret),
         'RADMIN_PASSWORD': ecs.Secret.fromSecretsManager(radminSecret),
       }
     })
@@ -179,7 +225,7 @@ export class ProxysqlFargate extends cdk.Construct {
     })
 
     // allow fargate service connect to dbcluster
-    props.dbcluster?.dbcluster.connections.allowDefaultPortFrom(svc.service)
+    props.rdscluster?.dbcluster.connections.allowDefaultPortFrom(svc.service)
 
     // allow proxysql to listen on tcp 6033 for traffic
     svc.service.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(PROXYSQL_TRAFFIC_PORT))
@@ -204,20 +250,32 @@ export class ProxysqlFargate extends cdk.Construct {
       target: route53.RecordTarget.fromAlias(new alias.LoadBalancerTarget(svc.loadBalancer)),
     });
 
-    if(props.dbcluster) {
+    if(props.rdscluster) {
       // writer.proxysql.local CNAME to Aurora writer
       new route53.CnameRecord(this, 'CnameAuroraWriter', {
         recordName: 'writer',
-        domainName: props.dbcluster.clusterEndpointHostname,
+        domainName: props.rdscluster.clusterEndpointHostname,
         zone,
       })
       // reader.proxysql.local CNAME to Aurora reader
       new route53.CnameRecord(this, 'CnameAuroraReader', {
         recordName: 'reader',
-        domainName: props.dbcluster.clusterEndpointHostname,
+        domainName: props.rdscluster.clusterEndpointHostname,
         zone,
       })
-
+    } else {
+      // writer.proxysql.local CNAME to custom writer
+      new route53.CnameRecord(this, 'CnameCustomWriter', {
+        recordName: 'writer',
+        domainName: props.customBackend!.writerHost,
+        zone,
+      })
+      // reader.proxysql.local CNAME to custom reader
+      new route53.CnameRecord(this, 'CnameCustomReader', {
+        recordName: 'reader',
+        domainName: props.customBackend!.readerHost,
+        zone,
+      })      
     }
 
     // printOutput(this, 'NLBDnsName', svc.loadBalancer.loadBalancerDnsName)

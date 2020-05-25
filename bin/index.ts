@@ -14,15 +14,18 @@ const stack = new cdk.Stack(app, 'ProxysqlFargateStack', { env })
 
 const infra = new Infra(stack, 'Infra')
 
-const dbcluster = new DB(stack, 'DBCluster', {
-  vpc: infra.vpc,
-  instanceType: new InstanceType('t2.medium'),
-})
+// const rdscluster = new DB(stack, 'DBCluster', {
+//   vpc: infra.vpc,
+//   instanceType: new InstanceType('t2.medium'),
+// })
 
 new ProxysqlFargate(stack, 'ProxySQL', {
   env,
   vpc: infra.vpc,
-  dbcluster
+  customBackend: {
+    writerHost: 'writer.pahud.dev',
+    readerHost: 'reader.pahud.dev',
+  }
 })
 
 // TBD: create a serverless demo stack

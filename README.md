@@ -233,6 +233,24 @@ Run `cdk destroy` to tear down the whole stack.
 npx cdk destroy
 ```
 
+## Custom MySQL backend
+
+To work with any existing MySQL backend, specify `customBackend` for `ProxysqlFargate`. After the deployment, `writer.proxysql.local` will resolve to your custom writer host and `reader.proxysql.local` to your custom reader while the ProxySQL Fargate service will still run behind `nlb.proxysql.local`.
+
+```ts
+new ProxysqlFargate(stack, 'ProxySQL', {
+  env,
+  vpc: infra.vpc,
+  customBackend: {
+    writerHost: 'foo.example.com',
+    readerHost: 'foo-ro.example.com',
+  }
+})
+```
+
+You may also specify `masterUsername`, `readerPort` and `writerPort` to customize your backend.
+
+
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
