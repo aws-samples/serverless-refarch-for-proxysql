@@ -70,7 +70,6 @@ The deployment will create
 7. `reader.proxysql.local` CNAME to the Aurora `reader` instance
 9.  password for the `monitor` user generated and stored in AWS Securets Manager
 10. password for the Aurora master user `admin` generated and stored in AWS Securets Manager
-11. Amazon API Gateway HTTP API with Lambda function with VPC support for demo
 
 
 After deployment completes, we need setup our backend Aurora cluster as well as the ProxySQL in Fargate. Follow the steps below step by step
@@ -232,6 +231,12 @@ Run `cdk destroy` to tear down the whole stack.
 ```bash
 npx cdk destroy
 ```
+
+## TODO
+
+- [ ] Support using existing MySQL databases or Aurora clusters
+- [ ] Amazon API Gateway HTTP API with Lambda function with VPC support for demo
+
 
 ## License
 
