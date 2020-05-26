@@ -2,9 +2,7 @@
 
 This reference architecture aims to build a serverless connection pooling adapter with proxysql on AWS Fargate and help AWS Lambda better connects to RDS for MySQL or Aurora databases.
 
-![](images/overview_v2.png)
-
-
+![diagram](docs/diagram.svg)
 
 # What is ProxySQL
 
