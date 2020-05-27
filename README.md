@@ -29,6 +29,8 @@ We will deploy this refarch with AWS CDK. Read the [Getting Started](https://doc
 When your AWS CDK environment is ready, run the following command to deploy this sample:
 
 ```bash
+git clone https://github.com/aws-samples/serverless-refarch-for-proxysql.git serverless-proxysql  
+cd serverless-proxysql
 # install required modules
 npm install
 # deploy with AWS CDK
