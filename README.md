@@ -38,6 +38,22 @@ npx cdk diff
 npx cdk deploy
 ```
 
+If you encounter the error:
+
+```
+Error: This stack uses assets, so the toolkit stack must be deployed to the environment
+```
+
+You need run `cdk bootstap` to bootstrap your environemt.
+
+For example:
+
+```bash
+npx cdk bootstrap aws://account-id/cn-northwest-1
+```
+(see [Bootstrapping your AWS environment](https://docs.aws.amazon.com/cdk/latest/guide/tools.html) in AWS CDK developer guide for more details)
+
+
 To deploy in existing VPC,
 
 ```bash
