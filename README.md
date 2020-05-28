@@ -148,7 +148,7 @@ Open a seperate terminal and connect to the Aurora writer. Before that, we need 
 
 check the `DBClusterclusterIdentifier` value from the AWS CDK output and replace the value of `DB_IDENTIFIER` below.
 
-Go to AWS Secrets Manager again, find the secret`DBClusterDatabaseSecret*` and copy its value. Replace the `***` below.
+Go to AWS Secrets Manager again, find the secret`ProxysqlFargateStack-auroraMasterSecret` and copy its value. Replace the `***` below.
 
 ```bash
 DB_IDENTIFIER='proxysqlfargatestack-dbclusterdatabased78b6f28-19ylab8pnjlqj'
@@ -223,7 +223,7 @@ WRITER> SELECT * FROM tasks;
 Now get back to the `NLB>` terminal
 
 ```sql
-WRITER> SELECT * FROM demo.tasks;
+NLB> SELECT * FROM demo.tasks;
 ```
 The content should be all in sync.
 
