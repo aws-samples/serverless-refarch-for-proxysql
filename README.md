@@ -267,6 +267,45 @@ new ProxysqlFargate(stack, 'ProxySQL', {
 
 You may also specify `masterUsername`, `readerPort` and `writerPort` to customize your backend.
 
+## Custom NLB VPC Subnets
+
+Specify `nlbSubnetIds` to force NLB use specific subnet IDs.
+
+```ts
+  new proxysql.ProxysqlFargate(stack, 'ProxySQL', {
+    vpc: infra.vpc,
+    rdscluster,
+    nlbSubnetIds: [
+      'subnet-aaa',
+      'subnet-bbb',
+      'subnet-ccc',
+    ]
+  })
+  ```
+
+
+## Custom master password Secret
+
+Use `masterSecret` to specify your master password from existing `Secret`.
+
+Pleae note at this moment the Fargate task definition doesn't support read secret from JSON field([#385](https://github.com/aws/containers-roadmap/issues/385)), make sure you provide the secret in `plaintext` format.
+
+```ts
+
+  const masterSecret = secretsmanager.Secret.fromSecretArn(stack, 'Secret', YOUR_SECRET_ARN)
+
+  new proxysql.ProxysqlFargate(stack, 'ProxySQL', {
+    vpc: infra.vpc,
+    customBackend: {
+      readerHost: 'foo',
+      writerHost: 'bar',
+      masterSecret,
+    }
+  })
+
+```
+
+
 
 ## TODO
 

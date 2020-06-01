@@ -9,8 +9,6 @@ READER=${DB_READER_HOSTNAME-reader.db.local}
 
 echo "[udpate.sh]=> updating proxysql.cnf"
 
-set
-
 sed \
 -e "s/##{DB_WRITER_HOST}##/${WRITER}/g" \
 -e "s/##{DB_READER_HOST}##/${READER}/g" \

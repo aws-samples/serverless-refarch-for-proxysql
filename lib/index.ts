@@ -9,6 +9,8 @@ import { Duration } from '@aws-cdk/core';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as alias from '@aws-cdk/aws-route53-targets';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
 
 const PROXYSQL_ADMIN_PORT = 6032
 const PROXYSQL_TRAFFIC_PORT = 6033
@@ -29,16 +31,23 @@ export interface ProxysqlFargateProps extends cdk.StackProps {
    * @default - no Amazon RDS cluster specified
    */
   readonly rdscluster?: DB;
+
   /**
    * Custom backend for any existing MySQL cluster. Define both the writer and reader.
    * 
    * @default - no custom backend
    */
   readonly customBackend?: CustomBackend;
+
   /**
    * VPC for the ProxySQL service with AWS Fargate
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * VPC subnet IDs for NLB
+   */
+  readonly nlbSubnetIds?: string[];
 }
 
 export class Infra extends cdk.Construct {
@@ -55,28 +64,38 @@ export interface CustomBackend {
    * custom writer host
    */
   readonly writerHost: string;
+
   /**
    * custom reader host
    */
   readonly readerHost: string;
+
   /**
    * custom writer port
    * 
    * @default 3306
    */
   readonly writerPort?: string;
+
   /**
    * custom reader port
    * 
    * @default 3306
    */
   readonly readerPort?: string;
+
   /**
    * custom master user name
    * 
    * @default admin
    */
   readonly masterUsername?: string;
+
+  /**
+   * Custom master secret from AWS Secret Manager
+   * 
+   */
+  readonly masterSecret?: ISecret;
 }
 
 export class DB extends cdk.Construct {
@@ -205,7 +224,7 @@ export class ProxysqlFargate extends cdk.Construct {
         DB_MASTER_USERNAME: props.rdscluster ? DB_MASTER_USERNAME : props.customBackend!.masterUsername ?? 'undefined' 
       },
       secrets: {
-        'DB_MASTER_PASSWORD': ecs.Secret.fromSecretsManager(auroraMasterSecret),
+        'DB_MASTER_PASSWORD': ecs.Secret.fromSecretsManager(props.customBackend?.masterSecret ??  auroraMasterSecret),
         'RADMIN_PASSWORD': ecs.Secret.fromSecretsManager(radminSecret),
       }
     })
@@ -221,6 +240,18 @@ export class ProxysqlFargate extends cdk.Construct {
       publicLoadBalancer: false,
       listenerPort: NLB_LISTENER_PORT,
     })
+
+    // if nlbSubnetIds provided, override the value of NLB subnets
+    if(props.nlbSubnetIds) {
+      const cfnLoadBalancer = svc.loadBalancer.node.tryFindChild('Resource') as elbv2.CfnLoadBalancer
+      cfnLoadBalancer.addPropertyOverride('Subnets', props.nlbSubnetIds)
+    }
+
+    // if custom master secert is provided, grant the ecs task execution role to read this secret
+    if (props.customBackend?.masterSecret) {
+      // svc.taskDefinition.addToExecutionRolePolicy()
+      props.customBackend.masterSecret.grantRead(svc.taskDefinition.executionRole!)
+    }
 
     // allow fargate service connect to dbcluster
     props.rdscluster?.dbcluster.connections.allowDefaultPortFrom(svc.service)
