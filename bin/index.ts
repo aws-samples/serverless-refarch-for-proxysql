@@ -21,25 +21,25 @@ const rdscluster = new DB(stack, 'DBCluster', {
   instanceType: new InstanceType('t2.medium'),
 })
 
-// new ProxysqlFargate(stack, 'ProxySQL', {
-//   env,
-//   vpc: infra.vpc,
-//   rdscluster,
-// })
-
-
-// custom backend
-const YOUR_SECRET_ARN = 'arn:aws:secretsmanager:ap-northeast-1:903779448426:secret:xxxxxxx-rC5RTf'
-const masterSecret = Secret.fromSecretArn(stack, 'Secret', YOUR_SECRET_ARN)
 new ProxysqlFargate(stack, 'ProxySQL', {
   env,
   vpc: infra.vpc,
-  customBackend: {
-    writerHost: 'writer.pahud.dev',
-    readerHost: 'reader.pahud.dev',
-    masterSecret,
-  },
+  rdscluster,
 })
+
+
+// custom backend
+// const YOUR_SECRET_ARN = 'arn:aws:secretsmanager:ap-northeast-1:112233445566:secret:xxxxxxx-rC5RTf'
+// const masterSecret = Secret.fromSecretArn(stack, 'Secret', YOUR_SECRET_ARN)
+// new ProxysqlFargate(stack, 'ProxySQL', {
+//   env,
+//   vpc: infra.vpc,
+//   customBackend: {
+//     writerHost: 'writer.pahud.dev',
+//     readerHost: 'reader.pahud.dev',
+//     masterSecret,
+//   },
+// })
 
 // TBD: create a serverless demo stack
 // new ServerlessDemo(stack, 'ServerlessDemo', { vpc: infra.vpc })

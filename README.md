@@ -291,17 +291,16 @@ Use `masterSecret` to specify your master password from existing `Secret`.
 Pleae note at this moment the Fargate task definition doesn't support read secret from JSON field([#385](https://github.com/aws/containers-roadmap/issues/385)), make sure you provide the secret in `plaintext` format.
 
 ```ts
-
-  const masterSecret = secretsmanager.Secret.fromSecretArn(stack, 'Secret', YOUR_SECRET_ARN)
-
-  new proxysql.ProxysqlFargate(stack, 'ProxySQL', {
-    vpc: infra.vpc,
-    customBackend: {
-      readerHost: 'foo',
-      writerHost: 'bar',
-      masterSecret,
-    }
-  })
+const const YOUR_SECRET_ARN = 'arn:aws:secretsmanager:ap-northeast-1:112233445566:secret:xxxxxxx-rC5RTf'
+const masterSecret = secretsmanager.Secret.fromSecretArn(stack, 'Secret', YOUR_SECRET_ARN)
+new proxysql.ProxysqlFargate(stack, 'ProxySQL', {
+  vpc: infra.vpc,
+  customBackend: {
+    readerHost: 'foo',
+    writerHost: 'bar',
+    masterSecret,
+  }
+})
 
 ```
 
