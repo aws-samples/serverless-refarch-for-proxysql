@@ -1,6 +1,8 @@
 import cdk = require('@aws-cdk/core');
-import { Infra, DB, ProxysqlFargate, ServerlessDemo } from '../lib/'
+import { Infra, DB, ProxysqlFargate } from '../lib/'
 import { InstanceType } from '@aws-cdk/aws-ec2';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+
 
 
 const app = new cdk.App()
@@ -22,17 +24,21 @@ const rdscluster = new DB(stack, 'DBCluster', {
 new ProxysqlFargate(stack, 'ProxySQL', {
   env,
   vpc: infra.vpc,
-  rdscluster
+  rdscluster,
 })
 
+
 // custom backend
+// const YOUR_SECRET_ARN = 'arn:aws:secretsmanager:ap-northeast-1:112233445566:secret:xxxxxxx-rC5RTf'
+// const masterSecret = Secret.fromSecretArn(stack, 'Secret', YOUR_SECRET_ARN)
 // new ProxysqlFargate(stack, 'ProxySQL', {
 //   env,
 //   vpc: infra.vpc,
 //   customBackend: {
 //     writerHost: 'writer.pahud.dev',
 //     readerHost: 'reader.pahud.dev',
-//   }
+//     masterSecret,
+//   },
 // })
 
 // TBD: create a serverless demo stack
