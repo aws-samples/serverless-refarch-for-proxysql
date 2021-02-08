@@ -20,6 +20,7 @@ const project = new AwsCdkTypeScriptApp({
     '@aws-cdk/aws-secretsmanager',
   ],
   dependabot: false,
+  defaultReleaseBranch: 'master',
 });
 
 // create a custom projen and yarn upgrade workflow
