@@ -23,6 +23,12 @@ const project = new AwsCdkTypeScriptApp({
   defaultReleaseBranch: 'master',
 });
 
+project.addFields({
+  resolutions: {
+    netmask: '2.0.1',
+  },
+});
+
 // create a custom projen and yarn upgrade workflow
 workflow = project.github.addWorkflow('ProjenYarnUpgrade');
 
