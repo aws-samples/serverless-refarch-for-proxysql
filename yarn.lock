@@ -1452,7 +1452,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^4.3.0":
+"@typescript-eslint/eslint-plugin@^4.21.0":
   version "4.21.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.21.0.tgz#3fce2bfa76d95c00ac4f33dff369cb593aab8878"
   integrity sha512-FPUyCPKZbVGexmbCFI3EQHzCZdy2/5f+jv6k2EDljGdXSRc0cKvbndd2nHZkSLqCNOPk0jB6lGzwIkglXcYVsQ==
@@ -1478,7 +1478,7 @@
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
-"@typescript-eslint/parser@^4.3.0":
+"@typescript-eslint/parser@^4.21.0":
   version "4.21.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.21.0.tgz#a227fc2af4001668c3e3f7415d4feee5093894c1"
   integrity sha512-eyNf7QmE5O/l1smaQgN0Lj2M/1jOuNg2NrBm1dqqQN0sVngTLyw8tdCbih96ixlhbF1oINoN8fDCyEH9SjLeIA==
@@ -5134,7 +5134,7 @@ neo-async@^2.6.0:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-netmask@2.0.1, netmask@^2.0.1:
+netmask@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-2.0.1.tgz#5a5cbdcbb7b6de650870e15e83d3e9553a414cf4"
   integrity sha512-gB8eG6ubxz67c7O2gaGiyWdRUIbH61q7anjgueDqCC9kvIs/b4CTtCMaQKeJbv1/Y7FT19I4zKwYmjnjInRQsg==
@@ -5630,6 +5630,30 @@ progress@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
+
+projen-automate-it@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/projen-automate-it/-/projen-automate-it-0.0.8.tgz#58141e9471fc96d4f403e50653c312b8e6bafd7a"
+  integrity sha512-EBq4+Xuc9zj9XwlGcUhGjAg8ULo8x2W+ypJ49cdBatM0f5/8/Uu9RkfoJtj8SOv2dsYptJKoMsBBSFhjqR1j7A==
+  dependencies:
+    projen "^0.17"
+
+projen@^0.17:
+  version "0.17.27"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.17.27.tgz#166aa7f6a5dab47fc65b3bf23e0d52646bfca5bb"
+  integrity sha512-O0xYEnn22UxMl4Bap5u87p30TGUQh4D0jw/cbOk+B0pnf8Y9k4AvWPonSQCFGxTbDMLXw1YBNIuT9orz1BNIEQ==
+  dependencies:
+    "@iarna/toml" "^2.2.5"
+    chalk "^4.1.0"
+    decamelize "^4.0.0"
+    fs-extra "^9.0.1"
+    glob "^7"
+    ini "^2.0.0"
+    inquirer "^7.3.3"
+    semver "^7.3.2"
+    xmlbuilder2 "^2.4.0"
+    yaml "^1.10.0"
+    yargs "^16.2.0"
 
 projen@^0.17.25:
   version "0.17.25"
@@ -6850,10 +6874,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.9.5:
-  version "3.9.9"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.9.tgz#e69905c54bc0681d0518bd4d587cc6f2d0b1a674"
-  integrity sha512-kdMjTiekY+z/ubJCATUPlRDl39vXYiMV9iyeMuEuXZh2we6zz80uovNN2WlAxmmdE/Z/YQe+EbOEXB5RHEED3w==
+typescript@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.3.tgz#39062d8019912d43726298f09493d598048c1ce3"
+  integrity sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==
 
 uglify-js@^3.1.4:
   version "3.13.3"
