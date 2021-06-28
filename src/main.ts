@@ -25,5 +25,3 @@ new ProxysqlFargate(stack, 'ProxySQL', {
 });
 
 app.synth();
-
-

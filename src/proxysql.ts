@@ -123,12 +123,13 @@ export class DB extends cdk.Construct {
         instanceType: props.instanceType ?? new ec2.InstanceType('t3.small'),
         vpc: props.vpc,
       },
-      parameterGroup: new rds.ParameterGroup(this, 'PG', {
-        engine: props.engine ?? rds.DatabaseClusterEngine.AURORA,
-        // engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL
-        // engine: (props.engine === rds.DatabaseClusterEngine.AURORA_POSTGRESQL) ? 'aurora-postgresql11' : 'default.aurora5.6',
-        // family: (props.engine === rds.DatabaseClusterEngine.AURORA_POSTGRESQL) ? 'aurora-postgresql11' : 'default.aurora5.6',
-      }),
+      // see issue #24 for lengthy explanation why the code was commented out
+      // parameterGroup: new rds.ParameterGroup(this, 'PG', {
+      //   engine: props.engine ?? rds.DatabaseClusterEngine.AURORA,
+      //   // engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL
+      //   // engine: (props.engine === rds.DatabaseClusterEngine.AURORA_POSTGRESQL) ? 'aurora-postgresql11' : 'default.aurora5.6',
+      //   // family: (props.engine === rds.DatabaseClusterEngine.AURORA_POSTGRESQL) ? 'aurora-postgresql11' : 'default.aurora5.6',
+      // }),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
