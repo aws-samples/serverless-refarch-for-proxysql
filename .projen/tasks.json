@@ -114,34 +114,13 @@
       },
       "steps": [
         {
-          "exec": "npm-check-updates --upgrade --target=minor --reject='projen'"
+          "exec": "npm-check-updates --upgrade --target=minor"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk eslint eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import jest jest-junit json-schema npm-check-updates ts-jest ts-node typescript @aws-cdk/assert @aws-cdk/aws-apigatewayv2-integrations @aws-cdk/aws-apigatewayv2 @aws-cdk/aws-ec2 @aws-cdk/aws-ecs-patterns @aws-cdk/aws-ecs @aws-cdk/aws-elasticloadbalancingv2 @aws-cdk/aws-lambda @aws-cdk/aws-rds @aws-cdk/aws-route53-targets @aws-cdk/aws-route53 @aws-cdk/aws-secretsmanager @aws-cdk/core"
-        },
-        {
-          "exec": "npx projen"
-        }
-      ]
-    },
-    "upgrade-projen": {
-      "name": "upgrade-projen",
-      "description": "upgrade projen",
-      "env": {
-        "CI": "0"
-      },
-      "steps": [
-        {
-          "exec": "npm-check-updates --upgrade --target=minor --filter='projen'"
-        },
-        {
-          "exec": "yarn install --check-files"
-        },
-        {
-          "exec": "yarn upgrade projen"
+          "exec": "yarn upgrade"
         },
         {
           "exec": "npx projen"
