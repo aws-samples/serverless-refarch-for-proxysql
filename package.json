@@ -9,7 +9,6 @@
     "test:watch": "npx projen test:watch",
     "test:update": "npx projen test:update",
     "upgrade-dependencies": "npx projen upgrade-dependencies",
-    "upgrade-projen": "npx projen upgrade-projen",
     "default": "npx projen default",
     "eslint": "npx projen eslint",
     "synth": "npx projen synth",
@@ -21,7 +20,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "@types/node": "^10.17.0",
+    "@types/node": "^12.20.0",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
     "aws-cdk": "^1.83.0",
@@ -54,6 +53,9 @@
     "@aws-cdk/core": "^1.83.0"
   },
   "bundledDependencies": [],
+  "engines": {
+    "node": ">= 12.20.0"
+  },
   "license": "Apache-2.0",
   "version": "0.0.0",
   "jest": {

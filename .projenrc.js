@@ -19,7 +19,9 @@ const project = new AwsCdkTypeScriptApp({
     '@aws-cdk/aws-elasticloadbalancingv2',
     '@aws-cdk/aws-secretsmanager',
   ],
+  minNodeVersion: '12.20.0',
   depsUpgrade: DependenciesUpgradeMechanism.githubWorkflow({
+    ignoreProjen: false,
     workflowOptions: {
       labels: ['auto-approve', 'auto-merge'],
       secret: AUTOMATION_TOKEN,
