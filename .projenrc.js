@@ -36,7 +36,7 @@ const project = new AwsCdkTypeScriptApp({
 
 project.package.addField('resolutions', {
   'pac-resolver': '5.0.0',
-})
+});
 
 const common_exclude = ['cdk.out', 'cdk.context.json', 'yarn-error.log'];
 project.npmignore.exclude('images', ...common_exclude);
