@@ -19,7 +19,7 @@ const project = new AwsCdkTypeScriptApp({
     '@aws-cdk/aws-elasticloadbalancingv2',
     '@aws-cdk/aws-secretsmanager',
   ],
-  minNodeVersion: '12.20.0',
+  minNodeVersion: '14.17.0',
   depsUpgrade: DependenciesUpgradeMechanism.githubWorkflow({
     ignoreProjen: false,
     workflowOptions: {
@@ -33,6 +33,10 @@ const project = new AwsCdkTypeScriptApp({
   },
   defaultReleaseBranch: 'main',
 });
+
+project.package.addField('resolutions', {
+  'pac-resolver': '5.0.0',
+})
 
 const common_exclude = ['cdk.out', 'cdk.context.json', 'yarn-error.log'];
 project.npmignore.exclude('images', ...common_exclude);
