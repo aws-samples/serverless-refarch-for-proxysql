@@ -60,7 +60,7 @@ To deploy in existing VPC,
 # deploy in vpc-123456
 npx cdk deploy -c use_vpc_id=vpc-123456
 # deploy in the default VPC
-npx cdk deply -c use_default_vpc-1
+npx cdk deploy -c use_default_vpc-1
 ```
 
 ### Output Table
@@ -311,5 +311,5 @@ new proxysql.ProxysqlFargate(stack, 'ProxySQL', {
 
 ## License
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+This library is licensed under the Apache-2.0 License. See the LICENSE file.
 
