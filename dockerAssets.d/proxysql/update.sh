@@ -7,7 +7,7 @@ OUTFILE=${OUTFILE-/etc/proxysql.cnf}
 WRITER=${DB_WRITER_HOSTNAME-writer.db.local}
 READER=${DB_READER_HOSTNAME-reader.db.local}
 
-echo "[udpate.sh]=> updating proxysql.cnf"
+echo "[update.sh]=> updating proxysql.cnf"
 
 sed \
 -e "s/##{DB_WRITER_HOST}##/${WRITER}/g" \
