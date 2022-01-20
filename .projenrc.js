@@ -1,32 +1,37 @@
-const { AwsCdkTypeScriptApp, DependenciesUpgradeMechanism } = require('projen');
+const { awscdk, DependenciesUpgradeMechanism } = require('projen');
 
 const AUTOMATION_TOKEN = 'PROJEN_GITHUB_TOKEN';
 
-const project = new AwsCdkTypeScriptApp({
-  cdkVersion: '1.83.0',
+const project = new awscdk.AwsCdkTypeScriptApp({
+  cdkVersion: '2.0.0',
   name: 'serverless-refarch-for-proxysql',
-  cdkDependencies: [
-    '@aws-cdk/aws-ec2',
-    '@aws-cdk/aws-ecs',
-    '@aws-cdk/aws-ecs-patterns',
-    '@aws-cdk/aws-rds',
-    '@aws-cdk/aws-lambda',
-    '@aws-cdk/aws-apigatewayv2',
-    '@aws-cdk/aws-apigatewayv2-integrations',
-    '@aws-cdk/aws-route53',
-    '@aws-cdk/aws-route53-targets',
-    '@aws-cdk/aws-secretsmanager',
-    '@aws-cdk/aws-elasticloadbalancingv2',
-    '@aws-cdk/aws-secretsmanager',
+  defaultReleaseBranch: 'main',
+  /**
+   * we default release the main branch(cdkv2) with major version 2.
+   */
+  majorVersion: 2,
+  defaultReleaseBranch: 'main',
+  /**
+    * we also release the cdkv1 branch with major version 1.
+    */
+  releaseBranches: {
+    cdkv1: { npmDistTag: 'cdkv1', majorVersion: 1 },
+  },
+  workflowNodeVersion: '14.17.0',
+  devDeps: [
+    'aws-cdk',
+    'ts-node',
   ],
-  minNodeVersion: '14.17.0',
-  depsUpgrade: DependenciesUpgradeMechanism.githubWorkflow({
+  depsUpgradeOptions: {
     ignoreProjen: false,
     workflowOptions: {
       labels: ['auto-approve', 'auto-merge'],
-      secret: AUTOMATION_TOKEN,
     },
-  }),
+  },
+  autoApproveOptions: {
+    secret: 'GITHUB_TOKEN',
+    allowedUsernames: ['pahud'],
+  },
   autoApproveOptions: {
     secret: 'GITHUB_TOKEN',
     allowedUsernames: ['pahud'],

@@ -1,6 +1,9 @@
-import { InstanceType } from '@aws-cdk/aws-ec2';
-import { App, Stack } from '@aws-cdk/core';
 import { Infra, DB, ProxysqlFargate } from './proxysql';
+import {
+  App, Stack,
+  aws_ec2 as ec2,
+}from 'aws-cdk-lib';
+
 
 // for development, use account/region from cdk cli
 const devEnv = {
@@ -16,7 +19,7 @@ const infra = new Infra(stack, 'Infra');
 
 const rdscluster = new DB(stack, 'DBCluster', {
   vpc: infra.vpc,
-  instanceType: new InstanceType('t2.medium'),
+  instanceType: new ec2.InstanceType('t2.medium'),
 });
 
 new ProxysqlFargate(stack, 'ProxySQL', {

@@ -10,6 +10,12 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as alias from '@aws-cdk/aws-route53-targets';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import {
+  aws_ec2 as ec2,
+  aws_apigateway as apigateway,
+  aws_apigatewayv2_integrations as integrations,
+} from 'aws-cdk-lib';
+
 
 const PROXYSQL_ADMIN_PORT = 6032;
 const PROXYSQL_TRAFFIC_PORT = 6033;
