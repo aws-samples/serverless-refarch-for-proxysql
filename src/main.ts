@@ -1,8 +1,8 @@
-import { Infra, DB, ProxysqlFargate } from './proxysql';
 import {
   App, Stack,
   aws_ec2 as ec2,
-}from 'aws-cdk-lib';
+} from 'aws-cdk-lib';
+import { Infra, DB, ProxysqlFargate } from './proxysql';
 
 
 // for development, use account/region from cdk cli

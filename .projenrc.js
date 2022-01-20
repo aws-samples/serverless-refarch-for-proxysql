@@ -1,6 +1,4 @@
-const { awscdk, DependenciesUpgradeMechanism } = require('projen');
-
-const AUTOMATION_TOKEN = 'PROJEN_GITHUB_TOKEN';
+const { awscdk } = require('projen');
 
 const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.0.0',
@@ -18,6 +16,10 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     cdkv1: { npmDistTag: 'cdkv1', majorVersion: 1 },
   },
   workflowNodeVersion: '14.17.0',
+  deps: [
+    '@aws-cdk/aws-apigatewayv2-alpha',
+    '@aws-cdk/aws-apigatewayv2-integrations-alpha',
+  ],
   devDeps: [
     'aws-cdk',
     'ts-node',
