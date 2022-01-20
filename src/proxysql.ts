@@ -1,15 +1,19 @@
-import * as apigateway from '@aws-cdk/aws-apigatewayv2';
-import * as integrations from '@aws-cdk/aws-apigatewayv2-integrations';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as rds from '@aws-cdk/aws-rds';
-import * as route53 from '@aws-cdk/aws-route53';
-import * as alias from '@aws-cdk/aws-route53-targets';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as cdk from '@aws-cdk/core';
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as integrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import {
+  StackProps, Stack, RemovalPolicy, Duration, CfnOutput,
+  aws_ec2 as ec2,
+  aws_ecs as ecs,
+  aws_ecs_patterns as ecsPatterns,
+  aws_elasticloadbalancingv2 as elbv2,
+  aws_lambda as lambda,
+  aws_rds as rds,
+  aws_route53 as route53,
+  aws_route53_targets as alias,
+  aws_secretsmanager as secretsmanager,
+} from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+
 
 const PROXYSQL_ADMIN_PORT = 6032;
 const PROXYSQL_TRAFFIC_PORT = 6033;
@@ -30,7 +34,7 @@ export interface DBProps {
   readonly masterUsername?: string;
 }
 
-export interface ProxysqlFargateProps extends cdk.StackProps {
+export interface ProxysqlFargateProps extends StackProps {
   /**
    * Amazon RDS cluster created with AWS CDK
    *
@@ -56,11 +60,11 @@ export interface ProxysqlFargateProps extends cdk.StackProps {
   readonly nlbSubnetIds?: string[];
 }
 
-export class Infra extends cdk.Construct {
-  readonly vpc: ec2.IVpc
-  constructor(scope: cdk.Construct, id: string) {
+export class Infra extends Construct {
+  readonly vpc: ec2.IVpc;
+  constructor(scope: Construct, id: string) {
     super(scope, id);
-    const stack = cdk.Stack.of(this);
+    const stack = Stack.of(this);
     this.vpc = getOrCreateVpc(stack);
   }
 }
@@ -104,14 +108,14 @@ export interface CustomBackend {
   readonly masterSecret?: secretsmanager.ISecret;
 }
 
-export class DB extends cdk.Construct {
+export class DB extends Construct {
   readonly dbcluster: rds.DatabaseCluster;
   readonly vpc: ec2.IVpc;
   readonly clusterEndpointHostname: string;
   readonly clusterReadEndpointHostname: string;
   readonly clusterIdentifier: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DBProps ) {
+  constructor(scope: Construct, id: string, props: DBProps ) {
     super(scope, id);
     // Aurora
     const dbcluster = new rds.DatabaseCluster(this, 'Database', {
@@ -129,7 +133,7 @@ export class DB extends cdk.Construct {
         // engine: (props.engine === rds.DatabaseClusterEngine.AURORA_POSTGRESQL) ? 'aurora-postgresql11' : 'default.aurora5.6',
         // family: (props.engine === rds.DatabaseClusterEngine.AURORA_POSTGRESQL) ? 'aurora-postgresql11' : 'default.aurora5.6',
       }),
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
 
@@ -158,8 +162,8 @@ export interface ServerlessDemoProps {
   readonly vpc: ec2.IVpc;
 }
 
-export class ServerlessDemo extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: ServerlessDemoProps) {
+export class ServerlessDemo extends Construct {
+  constructor(scope: Construct, id: string, props: ServerlessDemoProps) {
     super(scope, id);
 
     // our lambda function
@@ -167,7 +171,7 @@ export class ServerlessDemo extends cdk.Construct {
       code: lambda.Code.fromAsset('./lambda/hello_world'),
       runtime: lambda.Runtime.PYTHON_3_7,
       memorySize: 512,
-      timeout: cdk.Duration.seconds(60),
+      timeout: Duration.seconds(60),
       handler: 'app.lambda_handler',
       vpc: props.vpc,
       environment: {
@@ -176,18 +180,16 @@ export class ServerlessDemo extends cdk.Construct {
       },
     });
 
-    const api = new apigateway.HttpApi(this, 'APIG', {
-      defaultIntegration: new integrations.LambdaProxyIntegration({
-        handler,
-      }),
+    const api = new apigatewayv2.HttpApi(this, 'APIG', {
+      defaultIntegration: new integrations.HttpLambdaIntegration('integ', handler),
     });
 
     printOutput(this, 'APIGatewayURL', api.url!);
   }
 }
 
-export class ProxysqlFargate extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: ProxysqlFargateProps) {
+export class ProxysqlFargate extends Construct {
+  constructor(scope: Construct, id: string, props: ProxysqlFargateProps) {
     super(scope, id);
 
     if ((props.rdscluster && props.customBackend) || (!props.rdscluster && !props.customBackend)) {
@@ -198,7 +200,7 @@ export class ProxysqlFargate extends cdk.Construct {
 
     // generate and store MYSQL_USER1_PASSWORD in the secrets manager
     const auroraMasterSecret = new secretsmanager.Secret(this, 'AuroraMasterSecret', {
-      secretName: `${cdk.Stack.of(this).stackName}-auroraMasterSecret`,
+      secretName: `${Stack.of(this).stackName}-auroraMasterSecret`,
       generateSecretString: {
         passwordLength: 12,
         excludePunctuation: true,
@@ -207,7 +209,7 @@ export class ProxysqlFargate extends cdk.Construct {
 
     // generate and store RADMIN_PASSWORD in the secrets manager
     const radminSecret = new secretsmanager.Secret(this, 'RAdminPassword', {
-      secretName: `${cdk.Stack.of(this).stackName}-radmin_pwd`,
+      secretName: `${Stack.of(this).stackName}-radmin_pwd`,
       generateSecretString: {
         passwordLength: 12,
         excludePunctuation: true,
@@ -325,7 +327,7 @@ export class ProxysqlFargate extends cdk.Construct {
   }
 }
 
-function getOrCreateVpc(scope: cdk.Construct): ec2.IVpc {
+function getOrCreateVpc(scope: Construct): ec2.IVpc {
   // use an existing vpc or create a new one
   const vpc = scope.node.tryGetContext('use_default_vpc') === '1' ?
     ec2.Vpc.fromLookup(scope, 'Vpc', { isDefault: true }) :
@@ -336,6 +338,6 @@ function getOrCreateVpc(scope: cdk.Construct): ec2.IVpc {
   return vpc;
 }
 
-function printOutput(scope: cdk.Construct, id: string, key: string | number) {
-  new cdk.CfnOutput(scope, id, { value: String(key) } );
+function printOutput(scope: Construct, id: string, key: string | number) {
+  new CfnOutput(scope, id, { value: String(key) } );
 }
