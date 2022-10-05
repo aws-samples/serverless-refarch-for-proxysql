@@ -15,7 +15,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   releaseBranches: {
     cdkv1: { npmDistTag: 'cdkv1', majorVersion: 1 },
   },
-  workflowNodeVersion: '14.17.0',
+  workflowNodeVersion: '14.18.0',
   deps: [
     '@aws-cdk/aws-apigatewayv2-alpha',
     '@aws-cdk/aws-apigatewayv2-integrations-alpha',
