@@ -1,7 +1,7 @@
 const { awscdk } = require('projen');
 
 const project = new awscdk.AwsCdkTypeScriptApp({
-  cdkVersion: '2.0.0',
+  cdkVersion: '2.11.0',
   name: 'serverless-refarch-for-proxysql',
   defaultReleaseBranch: 'main',
   /**
@@ -39,10 +39,6 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     allowedUsernames: ['pahud'],
   },
   defaultReleaseBranch: 'main',
-});
-
-project.package.addField('resolutions', {
-  'pac-resolver': '5.0.0',
 });
 
 const common_exclude = ['cdk.out', 'cdk.context.json', 'yarn-error.log'];
